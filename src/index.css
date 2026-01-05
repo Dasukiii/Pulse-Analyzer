@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Heatmap cell colors */
+.heatmap-1 {
+    background-color: #ef4444;
+}
+
+.heatmap-2 {
+    background-color: #f97316;
+}
+
+.heatmap-3 {
+    background-color: #f59e0b;
+}
+
+.heatmap-4 {
+    background-color: #eab308;
+}
+
+.heatmap-5 {
+    background-color: #84cc16;
+}
+
+.heatmap-6 {
+    background-color: #22c55e;
+}
+
+.heatmap-7 {
+    background-color: #10b981;
+}
+
+.heatmap-8 {
+    background-color: #14b8a6;
+}
+
+.heatmap-9 {
+    background-color: #06b6d4;
+}
+
+.heatmap-10 {
+    background-color: #3b82f6;
+}
+
+/* Animation delays */
+.delay-100 {
+    animation-delay: 100ms;
+}
+
+.delay-200 {
+    animation-delay: 200ms;
+}
+
+.delay-300 {
+    animation-delay: 300ms;
+}
+
+.delay-400 {
+    animation-delay: 400ms;
+}
+
+.delay-500 {
+    animation-delay: 500ms;
+}
