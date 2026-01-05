@@ -14,6 +14,7 @@ export default function ThemeAnalysis() {
     const [error, setError] = useState<string | null>(null)
     const [usingMockData, setUsingMockData] = useState(false)
     const [isExporting, setIsExporting] = useState(false)
+    const [showCostWarning, setShowCostWarning] = useState(false)
 
     useEffect(() => {
         loadSurveys()
@@ -43,6 +44,7 @@ export default function ThemeAnalysis() {
     const loadThemes = async (surveyId: string) => {
         try {
             setLoading(true)
+            setThemes([])
             const data = await getThemesBySurveyId(surveyId)
             const convertedThemes: DetectedTheme[] = data.map((t: Theme) => ({
                 name: t.name,
@@ -113,6 +115,44 @@ export default function ThemeAnalysis() {
 
     return (
         <>
+            {/* Cost Warning Modal */}
+            {showCostWarning && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowCostWarning(false)}>
+                    <div className="bg-white rounded-2xl p-6 max-w-md mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                                <Sparkles className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900">AI Analysis</h3>
+                                <p className="text-sm text-slate-500">Uses OpenAI API credits</p>
+                            </div>
+                        </div>
+                        <p className="text-slate-600 mb-6">
+                            This will use your OpenAI API to analyze survey responses and detect themes. Estimated cost is $0.01-0.05 depending on response volume. Continue?
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setShowCostWarning(false)}
+                                className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowCostWarning(false)
+                                    handleAnalyzeWithAI()
+                                }}
+                                className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-xl hover:shadow-lg flex items-center gap-2"
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                Continue Analysis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <header className="sticky top-0 z-20 bg-slate-50/90 backdrop-blur-lg border-b border-slate-200">
                 <div className="px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -152,7 +192,7 @@ export default function ThemeAnalysis() {
                                 Export PDF
                             </button>
                             <button
-                                onClick={handleAnalyzeWithAI}
+                                onClick={() => setShowCostWarning(true)}
                                 disabled={isAnalyzing}
                                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all disabled:opacity-50"
                             >
@@ -197,7 +237,7 @@ export default function ThemeAnalysis() {
                         <h3 className="text-lg font-semibold text-slate-700 mb-2">No themes detected yet</h3>
                         <p className="text-slate-500 mb-6">Click "Analyze with AI" to detect themes from survey responses.</p>
                         <button
-                            onClick={handleAnalyzeWithAI}
+                            onClick={() => setShowCostWarning(true)}
                             disabled={isAnalyzing}
                             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-xl"
                         >

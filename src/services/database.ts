@@ -273,6 +273,13 @@ export async function saveNarratives(surveyId: string, narratives: Partial<Narra
         return []
     }
 
+    // First, delete existing narratives for this survey
+    await supabase
+        .from('narratives')
+        .delete()
+        .eq('survey_id', surveyId)
+
+    // Insert new narratives
     const narrativesWithSurveyId = narratives.map(n => ({
         ...n,
         survey_id: surveyId

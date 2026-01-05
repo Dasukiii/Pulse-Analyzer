@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FileText, AlertTriangle, Lightbulb, TrendingUp, Download, Edit, Archive, ChevronRight, Loader2, Sparkles, AlertCircle } from 'lucide-react'
+import { FileText, AlertTriangle, Lightbulb, TrendingUp, Download, Loader2, Sparkles, AlertCircle } from 'lucide-react'
 import { generateNarrativeHighlights, hasApiKey, type NarrativeInsight, type SurveyMetrics } from '../services/openai'
 import { getNarrativesBySurveyId, getSurveys, getThemesBySurveyId, getDashboardStats, saveNarratives, Survey, Narrative, Theme } from '../services/database'
 import { exportPageToPDF } from '../services/pdfExport'
@@ -34,6 +34,7 @@ export default function NarrativeHighlights() {
     const [error, setError] = useState<string | null>(null)
     const [activeFilter, setActiveFilter] = useState('All')
     const [isExporting, setIsExporting] = useState(false)
+    const [showCostWarning, setShowCostWarning] = useState(false)
 
     useEffect(() => {
         loadSurveys()
@@ -77,6 +78,7 @@ export default function NarrativeHighlights() {
     const loadNarratives = async (surveyId: string) => {
         try {
             setLoading(true)
+            setNarratives([])
             const data = await getNarrativesBySurveyId(surveyId)
             const convertedNarratives: NarrativeInsight[] = data.map((n: Narrative) => ({
                 type: n.type,
@@ -171,6 +173,44 @@ export default function NarrativeHighlights() {
 
     return (
         <>
+            {/* Cost Warning Modal */}
+            {showCostWarning && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowCostWarning(false)}>
+                    <div className="bg-white rounded-2xl p-6 max-w-md mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                                <Sparkles className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900">AI Narrative Generation</h3>
+                                <p className="text-sm text-slate-500">Uses OpenAI API credits</p>
+                            </div>
+                        </div>
+                        <p className="text-slate-600 mb-6">
+                            This will use your OpenAI API to generate narrative insights and executive summaries. Estimated cost is $0.01-0.03 per generation. Continue?
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setShowCostWarning(false)}
+                                className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowCostWarning(false)
+                                    handleGenerateWithAI()
+                                }}
+                                className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-xl hover:shadow-lg flex items-center gap-2"
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                Continue Generation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <header className="sticky top-0 z-20 bg-slate-50/90 backdrop-blur-lg border-b border-slate-200">
                 <div className="px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -205,7 +245,7 @@ export default function NarrativeHighlights() {
                                 Export PDF
                             </button>
                             <button
-                                onClick={handleGenerateWithAI}
+                                onClick={() => setShowCostWarning(true)}
                                 disabled={isGenerating}
                                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all disabled:opacity-50"
                             >
@@ -250,7 +290,7 @@ export default function NarrativeHighlights() {
                         <h3 className="text-lg font-semibold text-slate-700 mb-2">No narratives generated yet</h3>
                         <p className="text-slate-500 mb-6">Click "Generate with AI" to create narrative insights from survey data.</p>
                         <button
-                            onClick={handleGenerateWithAI}
+                            onClick={() => setShowCostWarning(true)}
                             disabled={isGenerating}
                             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-xl"
                         >
@@ -299,21 +339,10 @@ export default function NarrativeHighlights() {
                                                     {narrative.type.charAt(0).toUpperCase() + narrative.type.slice(1)}
                                                 </span>
                                                 <p className="text-slate-700">{narrative.content}</p>
-                                                <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-200/50">
+                                                <div className="mt-4 pt-4 border-t border-slate-200/50">
                                                     <span className="text-xs text-slate-500">
                                                         AI-generated insight
                                                     </span>
-                                                    <div className="flex items-center gap-2">
-                                                        <button className="p-1.5 rounded-lg hover:bg-white/50 transition-colors" title="Edit">
-                                                            <Edit className="w-4 h-4 text-slate-500" />
-                                                        </button>
-                                                        <button className="p-1.5 rounded-lg hover:bg-white/50 transition-colors" title="Archive">
-                                                            <Archive className="w-4 h-4 text-slate-500" />
-                                                        </button>
-                                                        <button className="p-1.5 rounded-lg hover:bg-white/50 transition-colors" title="View Details">
-                                                            <ChevronRight className="w-4 h-4 text-slate-500" />
-                                                        </button>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

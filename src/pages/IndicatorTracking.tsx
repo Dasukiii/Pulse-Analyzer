@@ -39,6 +39,7 @@ export default function IndicatorTracking() {
     const loadIndicators = async (surveyId: string) => {
         try {
             setLoading(true)
+            setIndicators([])
             const data = await getIndicatorsBySurveyId(surveyId)
             setIndicators(data)
         } catch (err) {

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { UploadCloud, FileSpreadsheet, Check, Loader2, Eye, HelpCircle, Download, Info, AlertCircle, X } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Check, Loader2, Eye, HelpCircle, Download, Info, AlertCircle, X, Sparkles } from 'lucide-react'
 import {
     parseCSV,
     autoDetectColumns,
@@ -48,6 +48,7 @@ export default function SurveyUpload() {
 
     // Result state
     const [resultSurveyId, setResultSurveyId] = useState<string | null>(null)
+    const [aiGenerated, setAiGenerated] = useState<{ themes: boolean; narratives: boolean }>({ themes: false, narratives: false })
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
@@ -177,6 +178,7 @@ export default function SurveyUpload() {
                 setProgress(100)
                 setProcessingStage('Complete!')
                 setResultSurveyId(result.surveyId || null)
+                setAiGenerated(result.aiGenerated || { themes: false, narratives: false })
                 setTimeout(() => setStep('success'), 500)
             } else {
                 setError(result.error || 'Failed to process survey')
@@ -492,10 +494,22 @@ export default function SurveyUpload() {
                         </div>
                         <h3 className="text-xl font-bold text-slate-900 mb-2">Survey Processed Successfully!</h3>
                         <p className="text-slate-500 mb-2">Your survey has been analyzed and is ready to view.</p>
-                        <p className="text-sm text-slate-400 mb-6">
+                        <p className="text-sm text-slate-400 mb-2">
                             Processed {rows.length} responses
                             {!isSupabaseConfigured() && ' (Demo mode - data not persisted)'}
                         </p>
+
+                        {(aiGenerated.themes || aiGenerated.narratives) && (
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-xl border border-purple-100 mb-6">
+                                <Sparkles className="w-4 h-4 text-purple-600" />
+                                <p className="text-sm text-purple-700">
+                                    AI generated {aiGenerated.themes && 'themes'}
+                                    {aiGenerated.themes && aiGenerated.narratives && ' and '}
+                                    {aiGenerated.narratives && 'narrative insights'} automatically
+                                </p>
+                            </div>
+                        )}
+
                         <div className="flex justify-center gap-3">
                             <button
                                 onClick={() => navigate(resultSurveyId ? `/survey/${resultSurveyId}` : '/surveys')}

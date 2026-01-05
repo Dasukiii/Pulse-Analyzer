@@ -48,6 +48,7 @@ export default function HeatmapView() {
     const loadHeatmapData = async (surveyId: string) => {
         try {
             setLoading(true)
+            setHeatmapData({ departments: [], questions: [], values: [] })
             const data = await getHeatmapData(surveyId)
             setHeatmapData(data)
         } catch (err) {

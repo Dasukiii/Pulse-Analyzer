@@ -34,6 +34,10 @@ export interface UploadResult {
     error?: string
     rowCount: number
     departments: string[]
+    aiGenerated?: {
+        themes: boolean
+        narratives: boolean
+    }
 }
 
 // Parse CSV text into rows
@@ -448,6 +452,8 @@ export async function uploadSurveyToDatabase(
         }
 
         // 7. Auto-generate AI themes and narratives if API key is configured
+        let aiGenerated = { themes: false, narratives: false }
+
         if (hasApiKey()) {
             try {
                 // Get open-ended responses for theme detection
@@ -473,6 +479,7 @@ export async function uploadSurveyToDatabase(
 
                     await saveThemes(survey.id, themesToSave)
                     console.log('[Upload] Saved', themesToSave.length, 'themes')
+                    aiGenerated.themes = true
 
                     // Generate narrative highlights
                     console.log('[Upload] Auto-generating narrative highlights...')
@@ -501,6 +508,7 @@ export async function uploadSurveyToDatabase(
 
                     await saveNarratives(survey.id, narrativesToSave)
                     console.log('[Upload] Saved', narrativesToSave.length, 'narratives')
+                    aiGenerated.narratives = true
                 }
             } catch (aiError) {
                 // Don't fail the upload if AI generation fails
@@ -514,7 +522,8 @@ export async function uploadSurveyToDatabase(
             success: true,
             surveyId: survey.id,
             rowCount: data.length,
-            departments: stats.departments
+            departments: stats.departments,
+            aiGenerated
         }
 
     } catch (error) {

@@ -22,14 +22,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
         )
     }
 
-    // In demo mode without user, redirect to login
-    // In real mode without user, redirect to login
-    if (!user && !isDemo) {
-        return <Navigate to="/" state={{ from: location }} replace />
-    }
-
-    // In demo mode, require explicit login
-    if (isDemo && !user) {
+    // Redirect to login if no user (both demo and real mode)
+    if (!user) {
         return <Navigate to="/" state={{ from: location }} replace />
     }
 

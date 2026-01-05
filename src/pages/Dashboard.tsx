@@ -35,6 +35,8 @@ export default function Dashboard() {
     const [themes, setThemes] = useState<Theme[]>([])
     const [heatmapData, setHeatmapData] = useState<HeatmapResult | null>(null)
     const [loading, setLoading] = useState(true)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
+    const [deletingId, setDeletingId] = useState<string | null>(null)
 
     useEffect(() => {
         loadDashboardData()
@@ -67,6 +69,19 @@ export default function Dashboard() {
         }
     }
 
+    const confirmDelete = async (surveyId: string) => {
+        try {
+            setDeletingId(surveyId)
+            await deleteSurvey(surveyId)
+            setSurveys(surveys.filter(s => s.id !== surveyId))
+            setShowDeleteConfirm(null)
+        } catch (err) {
+            console.error('Error deleting survey:', err)
+        } finally {
+            setDeletingId(null)
+        }
+    }
+
     // Generate trend data from surveys
     const trendData = surveys.slice(0, 4).reverse().map(s => ({
         name: new Date(s.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
@@ -85,6 +100,42 @@ export default function Dashboard() {
 
     return (
         <>
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDeleteConfirm(null)}>
+                    <div className="bg-white rounded-2xl p-6 max-w-md mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                                <Trash2 className="w-6 h-6 text-red-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900">Delete Survey?</h3>
+                                <p className="text-sm text-slate-500">This action cannot be undone.</p>
+                            </div>
+                        </div>
+                        <p className="text-slate-600 mb-6">
+                            This will permanently delete the survey and all its analytics data including themes, narratives, indicators, and responses.
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setShowDeleteConfirm(null)}
+                                className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => confirmDelete(showDeleteConfirm)}
+                                disabled={deletingId === showDeleteConfirm}
+                                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {deletingId === showDeleteConfirm && <Loader2 className="w-4 h-4 animate-spin" />}
+                                Delete Survey
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <header className="sticky top-0 z-20 bg-slate-50/90 backdrop-blur-lg border-b border-slate-200">
                 <div className="px-4 sm:px-6 lg:px-8 py-4">
@@ -422,12 +473,9 @@ export default function Dashboard() {
                                                 </td>
                                                 <td className="py-4 px-4">
                                                     <button
-                                                        onClick={async (e) => {
+                                                        onClick={(e) => {
                                                             e.preventDefault()
-                                                            if (confirm('Delete this survey and all its data?')) {
-                                                                await deleteSurvey(survey.id)
-                                                                setSurveys(surveys.filter(s => s.id !== survey.id))
-                                                            }
+                                                            setShowDeleteConfirm(survey.id)
                                                         }}
                                                         className="p-2 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"
                                                         title="Delete survey"
