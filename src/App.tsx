@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 import Dashboard from './pages/Dashboard'
 import SurveyLibrary from './pages/SurveyLibrary'
 import SurveyUpload from './pages/SurveyUpload'
@@ -16,6 +17,7 @@ function App() {
     return (
         <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route element={
                 <ProtectedRoute>
                     <AppLayout />

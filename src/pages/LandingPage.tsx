@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import {
     Activity,
@@ -16,12 +16,12 @@ import {
     UploadCloud,
     ChevronRight,
     Star,
-    Calendar,
     X,
     Loader2,
     AlertCircle,
     Eye,
-    EyeOff
+    EyeOff,
+    Check
 } from 'lucide-react'
 
 type AuthMode = 'signin' | 'signup'
@@ -36,6 +36,7 @@ export default function LandingPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [acceptedPDPA, setAcceptedPDPA] = useState(false)
 
     const navigate = useNavigate()
     const { signIn, signUp, user, isDemo } = useAuth()
@@ -72,6 +73,11 @@ export default function LandingPage() {
                     setLoading(false)
                     return
                 }
+                if (!acceptedPDPA) {
+                    setError('Please accept the Privacy Policy to continue')
+                    setLoading(false)
+                    return
+                }
                 const { error } = await signUp(email, password, fullName)
                 if (error) {
                     setError(error)
@@ -91,6 +97,7 @@ export default function LandingPage() {
         setEmail('')
         setPassword('')
         setFullName('')
+        setAcceptedPDPA(false)
         setShowLoginModal(true)
     }
 
@@ -361,14 +368,23 @@ export default function LandingPage() {
             {/* Footer */}
             <footer className="bg-slate-900 text-slate-400 py-16 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex flex-col items-center gap-8">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                                 <Activity className="w-5 h-5 text-white" />
                             </div>
                             <span className="text-xl font-bold text-white">Pulse Analyzer</span>
                         </div>
-                        <p className="text-sm">© 2025 Pulse Analyzer. All rights reserved.</p>
+                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+                            <p className="text-sm">2026 Pulse Analyzer. All rights reserved.</p>
+                            <Link to="/privacy-policy" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                                Privacy Policy (PDPA)
+                            </Link>
+                        </div>
+                        <div className="flex items-center gap-2 pt-4 border-t border-slate-800 w-full max-w-xs justify-center">
+                            <span className="text-xs text-slate-500">Powered by</span>
+                            <img src="/kadosh-ai-icon.png" alt="Kadosh AI" className="h-6 w-auto" />
+                        </div>
                     </div>
                 </div>
             </footer>
@@ -462,11 +478,38 @@ export default function LandingPage() {
                                         </button>
                                     </div>
                                 </div>
+
+                                {authMode === 'signup' && (
+                                    <div className="flex items-start gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setAcceptedPDPA(!acceptedPDPA)}
+                                            className={`flex-shrink-0 w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center transition-colors ${
+                                                acceptedPDPA
+                                                    ? 'bg-blue-600 border-blue-600'
+                                                    : 'border-slate-300 hover:border-blue-400'
+                                            }`}
+                                        >
+                                            {acceptedPDPA && <Check className="w-3 h-3 text-white" />}
+                                        </button>
+                                        <label className="text-sm text-slate-600">
+                                            I have read and agree to the{' '}
+                                            <Link
+                                                to="/privacy-policy"
+                                                target="_blank"
+                                                className="text-blue-600 hover:underline font-medium"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                Privacy Policy (PDPA)
+                                            </Link>
+                                        </label>
+                                    </div>
+                                )}
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={loading || (authMode === 'signup' && !acceptedPDPA)}
                                 className="w-full py-3.5 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {loading && <Loader2 className="w-5 h-5 animate-spin" />}
@@ -494,7 +537,7 @@ export default function LandingPage() {
                         <div className="mt-4 pt-4 border-t border-slate-100 text-center">
                             <p className="text-xs text-slate-400 flex items-center justify-center gap-2">
                                 Powered by
-                                <img src="/kadosh-icon.png" alt="Kadosh" className="h-4 w-auto" />
+                                <img src="/kadosh-ai-icon.png" alt="Kadosh AI" className="h-4 w-auto" />
                             </p>
                         </div>
                     </div>
