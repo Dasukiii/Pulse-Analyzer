@@ -535,10 +535,10 @@ export default function LandingPage() {
 
                         {/* Powered By */}
                         <div className="mt-4 pt-4 border-t border-slate-100 text-center">
-                            <p className="text-xs text-slate-400 flex items-center justify-center gap-2 mb-2">
+                            <p className="text-xs text-slate-400 flex items-center justify-center gap-2">
                                 Powered by
+                                <img src="/kadosh-ai-icon.png" alt="Kadosh AI" className="w-24 h-6" />
                             </p>
-                            <img src="/kadosh-ai-icon.png" alt="Kadosh AI" className="w-24 h-6 mx-auto" />
                         </div>
                     </div>
                 </div>
