@@ -340,25 +340,18 @@ export default function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer className="bg-slate-900 text-slate-400 py-16 px-4">
+            <footer className="bg-slate-900 text-slate-400 py-12 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col items-center gap-8">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                <Activity className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="text-xl font-bold text-white">Pulse Analyzer</span>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm">Copyright © 2026</span>
+                            <img src="/kadosh-ai-icon.png" alt="Kadosh AI" className="h-5 w-auto" />
+                            <span className="text-sm">. All rights reserved.</span>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-                            <p className="text-sm">2026 Pulse Analyzer. All rights reserved.</p>
-                            <Link to="/privacy-policy" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
-                                Privacy Policy (PDPA)
-                            </Link>
-                        </div>
-                        <div className="flex items-center gap-2 pt-4 border-t border-slate-800 w-full max-w-xs justify-center">
-                            <span className="text-xs text-slate-500">Powered by</span>
-                            <img src="/kadosh-ai-icon.png" alt="Kadosh AI" className="h-6 w-auto" />
-                        </div>
+                        <span className="hidden sm:inline text-slate-600">|</span>
+                        <Link to="/privacy-policy" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                            Privacy Policy (PDPA)
+                        </Link>
                     </div>
                 </div>
             </footer>
