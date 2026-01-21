@@ -175,11 +175,39 @@ export default function SurveyDetail() {
                             <div className="h-80">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={questionData} layout="vertical">
+                                        <defs>
+                                            <filter id="barGlow" x="-50%" y="-50%" width="200%" height="200%">
+                                                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                                <feMerge>
+                                                    <feMergeNode in="coloredBlur"/>
+                                                    <feMergeNode in="SourceGraphic"/>
+                                                </feMerge>
+                                            </filter>
+                                        </defs>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                                         <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} />
                                         <YAxis dataKey="question" type="category" width={120} tick={{ fontSize: 12 }} />
-                                        <Tooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
-                                        <Bar dataKey="score" radius={[0, 4, 4, 0]} fill="#3b82f6" />
+                                        <Tooltip
+                                            cursor={false}
+                                            contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                                        />
+                                        <Bar
+                                            dataKey="score"
+                                            radius={[0, 4, 4, 0]}
+                                            fill="#3b82f6"
+                                            onMouseEnter={(data, index, e) => {
+                                                if (e && e.target) {
+                                                    (e.target as SVGElement).style.filter = 'url(#barGlow)';
+                                                    (e.target as SVGElement).style.fill = '#60a5fa';
+                                                }
+                                            }}
+                                            onMouseLeave={(data, index, e) => {
+                                                if (e && e.target) {
+                                                    (e.target as SVGElement).style.filter = 'none';
+                                                    (e.target as SVGElement).style.fill = '#3b82f6';
+                                                }
+                                            }}
+                                        />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
