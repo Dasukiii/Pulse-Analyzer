@@ -4,9 +4,6 @@ import { useAuth } from '../contexts/AuthContext'
 import {
     Activity,
     Rocket,
-    ShieldCheck,
-    Lock,
-    Users,
     TrendingUp,
     Brain,
     FileText,
@@ -120,14 +117,6 @@ export default function LandingPage() {
                             <a href="#testimonials" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Testimonials</a>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <button onClick={() => openModal('signin')} className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                                Sign In
-                            </button>
-                            <button onClick={() => openModal('signup')} className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all hover:-translate-y-0.5">
-                                Get Started
-                            </button>
-                        </div>
                     </div>
                 </div>
             </nav>
@@ -156,26 +145,11 @@ export default function LandingPage() {
                                 Unlock the hidden stories in your employee surveys. Pulse Analyzer uses AI to detect themes, visualize sentiment, and generate narrative highlights.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                            <div className="flex flex-col sm:flex-row gap-4">
                                 <button onClick={() => openModal('signup')} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-400 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30 transition-all hover:-translate-y-0.5">
                                     <Rocket className="w-5 h-5" />
                                     Start Now
                                 </button>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-slate-500">
-                                <div className="flex items-center gap-2">
-                                    <ShieldCheck className="w-5 h-5 text-green-500" />
-                                    <span>SOC 2 Compliant</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Lock className="w-5 h-5 text-blue-500" />
-                                    <span>Enterprise Security</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Users className="w-5 h-5 text-purple-500" />
-                                    <span>500+ Companies</span>
-                                </div>
                             </div>
                         </div>
 
@@ -256,14 +230,14 @@ export default function LandingPage() {
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
-                            { icon: Grid3X3, title: 'Interactive Heatmaps', desc: 'Visualize engagement patterns across departments with drill-down heatmaps.', color: 'blue' },
-                            { icon: Sparkles, title: 'AI Theme Detection', desc: 'Automatically discover recurring themes in open-ended responses.', color: 'purple' },
-                            { icon: TrendingUp, title: 'Indicator Tracking', desc: 'Track key metrics over time with trend lines and threshold alerts.', color: 'green' },
-                            { icon: FileText, title: 'Narrative Highlights', desc: 'Get AI-generated summaries of key findings and recommendations.', color: 'orange' },
-                            { icon: FolderOpen, title: 'Survey Library', desc: 'Manage all surveys with search, filters, and comparison tools.', color: 'pink' },
-                            { icon: UploadCloud, title: 'Easy Data Upload', desc: 'Import from CSV, Excel, or Google Forms with smart mapping.', color: 'cyan' },
+                            { icon: Grid3X3, title: 'Interactive Heatmaps', desc: 'Visualize engagement patterns across departments with drill-down heatmaps.', color: 'blue', glow: 'hover:shadow-blue-500/30' },
+                            { icon: Sparkles, title: 'AI Theme Detection', desc: 'Automatically discover recurring themes in open-ended responses.', color: 'purple', glow: 'hover:shadow-purple-500/30' },
+                            { icon: TrendingUp, title: 'Indicator Tracking', desc: 'Track key metrics over time with trend lines and threshold alerts.', color: 'green', glow: 'hover:shadow-green-500/30' },
+                            { icon: FileText, title: 'Narrative Highlights', desc: 'Get AI-generated summaries of key findings and recommendations.', color: 'orange', glow: 'hover:shadow-orange-500/30' },
+                            { icon: FolderOpen, title: 'Survey Library', desc: 'Manage all surveys with search, filters, and comparison tools.', color: 'pink', glow: 'hover:shadow-pink-500/30' },
+                            { icon: UploadCloud, title: 'Easy Data Upload', desc: 'Import from CSV, Excel, or Google Forms with smart mapping.', color: 'cyan', glow: 'hover:shadow-cyan-500/30' },
                         ].map((feature, i) => (
-                            <div key={i} className="group p-8 bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-xl transition-all cursor-pointer">
+                            <div key={i} className={`group p-8 bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-xl ${feature.glow} transition-all cursor-pointer`}>
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${feature.color === 'blue' ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/25' :
                                     feature.color === 'purple' ? 'bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-500/25' :
                                         feature.color === 'green' ? 'bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/25' :
