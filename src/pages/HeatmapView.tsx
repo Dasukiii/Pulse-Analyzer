@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Download, Filter, Loader2 } from 'lucide-react'
 import { getHeatmapData, HeatmapResult, getSurveys, Survey } from '../services/database'
-import { exportPageToPDF } from '../services/pdfExport'
+import { exportHeatmapPDF } from '../services/pdfExport'
 
 function getHeatmapColor(value: number) {
     if (value >= 85) return 'bg-blue-500 text-white'
@@ -99,14 +99,17 @@ export default function HeatmapView() {
                         <div className="flex items-center gap-3">
                             <button
                                 onClick={async () => {
+                                    if (!heatmapData || heatmapData.departments.length === 0) return
                                     setIsExporting(true)
                                     try {
-                                        await exportPageToPDF('Heatmap Report', 'heatmap_report')
+                                        const selectedSurvey = surveys.find(s => s.id === selectedSurveyId)
+                                        const surveyName = selectedSurvey?.name || 'Survey'
+                                        await exportHeatmapPDF(surveyName, heatmapData, insights)
                                     } finally {
                                         setIsExporting(false)
                                     }
                                 }}
-                                disabled={isExporting}
+                                disabled={isExporting || !heatmapData || heatmapData.departments.length === 0}
                                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50"
                             >
                                 {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}

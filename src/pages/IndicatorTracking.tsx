@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, Target, AlertTriangle, CheckCircle, Download, Loader2 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
 import { getIndicatorsBySurveyId, getSurveys, Indicator, Survey } from '../services/database'
-import { exportPageToPDF } from '../services/pdfExport'
+import { exportIndicatorsPDF } from '../services/pdfExport'
 
 export default function IndicatorTracking() {
     const [indicators, setIndicators] = useState<Indicator[]>([])
@@ -79,7 +79,16 @@ export default function IndicatorTracking() {
                                 onClick={async () => {
                                     setIsExporting(true)
                                     try {
-                                        await exportPageToPDF('Indicator Tracking Report', 'indicator_report')
+                                        const selectedSurvey = surveys.find(s => s.id === selectedSurveyId)
+                                        const surveyName = selectedSurvey?.name || 'Survey'
+                                        const indicatorData = indicators.map(i => ({
+                                            name: i.name,
+                                            currentValue: i.current_value,
+                                            previousValue: i.previous_value,
+                                            targetValue: i.target_value,
+                                            trend: i.trend
+                                        }))
+                                        await exportIndicatorsPDF(surveyName, indicatorData, chartData)
                                     } finally {
                                         setIsExporting(false)
                                     }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { FileText, AlertTriangle, Lightbulb, TrendingUp, Download, Loader2, Sparkles, AlertCircle } from 'lucide-react'
 import { generateNarrativeHighlights, hasApiKey, type NarrativeInsight, type SurveyMetrics } from '../services/openai'
 import { getNarrativesBySurveyId, getSurveys, getThemesBySurveyId, getDashboardStats, saveNarratives, Survey, Narrative, Theme } from '../services/database'
-import { exportPageToPDF } from '../services/pdfExport'
+import { exportNarrativesPDF } from '../services/pdfExport'
 
 const getIcon = (type: string) => {
     switch (type) {
@@ -231,14 +231,31 @@ export default function NarrativeHighlights() {
                             </select>
                             <button
                                 onClick={async () => {
+                                    if (narratives.length === 0) return
                                     setIsExporting(true)
                                     try {
-                                        await exportPageToPDF('Narrative Highlights Report', 'narrative_highlights')
+                                        const surveyName = selectedSurvey?.name || 'Survey'
+                                        const narrativeData = narratives.map(n => ({
+                                            type: n.type,
+                                            title: n.title,
+                                            content: n.content,
+                                            priority: n.priority
+                                        }))
+                                        const surveyStats = selectedSurvey ? {
+                                            engagementScore: selectedSurvey.engagement_score || 0,
+                                            eNPS: selectedSurvey.enps || 0,
+                                            responseRate: selectedSurvey.total_employees > 0
+                                                ? Math.round((selectedSurvey.response_count / selectedSurvey.total_employees) * 100)
+                                                : 0,
+                                            totalResponses: selectedSurvey.response_count,
+                                            totalEmployees: selectedSurvey.total_employees
+                                        } : undefined
+                                        await exportNarrativesPDF(surveyName, narrativeData, surveyStats)
                                     } finally {
                                         setIsExporting(false)
                                     }
                                 }}
-                                disabled={isExporting}
+                                disabled={isExporting || narratives.length === 0}
                                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50"
                             >
                                 {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}

@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Download, TrendingUp, Users, MessageSquare, BarChart3, Loader2 } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { getSurveyById, getThemesBySurveyId, Survey, Theme } from '../services/database'
-import { exportPageToPDF } from '../services/pdfExport'
+import { exportSurveyDetailPDF } from '../services/pdfExport'
 
 export default function SurveyDetail() {
     const { id } = useParams<{ id: string }>()
@@ -101,7 +101,22 @@ export default function SurveyDetail() {
                                 onClick={async () => {
                                     setIsExporting(true)
                                     try {
-                                        await exportPageToPDF(`Survey Report - ${survey.name}`, `survey_${survey.id}_report`)
+                                        const stats = {
+                                            engagementScore: survey.engagement_score || 0,
+                                            eNPS: survey.enps || 0,
+                                            responseRate: responseRate,
+                                            totalResponses: survey.response_count,
+                                            totalEmployees: survey.total_employees
+                                        }
+                                        const themeData = themes.map(t => ({
+                                            name: t.name,
+                                            frequency: t.frequency,
+                                            sentiment: t.sentiment,
+                                            sentimentScore: t.sentiment_score,
+                                            keywords: t.keywords,
+                                            sampleQuotes: t.sample_quotes
+                                        }))
+                                        await exportSurveyDetailPDF(survey.name, stats, questionData, themeData, sentimentData)
                                     } finally {
                                         setIsExporting(false)
                                     }

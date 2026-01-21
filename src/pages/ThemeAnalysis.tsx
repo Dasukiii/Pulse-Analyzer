@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Sparkles, TrendingUp, TrendingDown, Minus, MessageSquare, Download, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { detectThemes, hasApiKey, type DetectedTheme } from '../services/openai'
 import { getThemesBySurveyId, getSurveys, getOpenEndedResponses, saveThemes, Survey, Theme } from '../services/database'
-import { exportPageToPDF } from '../services/pdfExport'
+import { exportThemeAnalysisPDF } from '../services/pdfExport'
 
 export default function ThemeAnalysis() {
     const [selectedThemeIndex, setSelectedThemeIndex] = useState(0)
@@ -178,14 +178,25 @@ export default function ThemeAnalysis() {
                             )}
                             <button
                                 onClick={async () => {
+                                    if (themes.length === 0) return
                                     setIsExporting(true)
                                     try {
-                                        await exportPageToPDF('Theme Analysis Report', 'theme_analysis')
+                                        const selectedSurvey = surveys.find(s => s.id === selectedSurveyId)
+                                        const surveyName = selectedSurvey?.name || 'Survey'
+                                        const themeData = themes.map(t => ({
+                                            name: t.name,
+                                            frequency: t.frequency,
+                                            sentiment: t.sentiment,
+                                            sentimentScore: t.sentimentScore,
+                                            keywords: t.keywords,
+                                            sampleQuotes: t.sampleQuotes
+                                        }))
+                                        await exportThemeAnalysisPDF(surveyName, themeData)
                                     } finally {
                                         setIsExporting(false)
                                     }
                                 }}
-                                disabled={isExporting}
+                                disabled={isExporting || themes.length === 0}
                                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50"
                             >
                                 {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
